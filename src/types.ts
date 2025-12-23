@@ -116,6 +116,7 @@ export interface RegexQueryCardConfig extends LovelaceCardConfig {
   show_state?: boolean;
   show_icon?: boolean;
   title?: string;
+  secondary_info?: 'entity_id' | 'last_changed' | 'last_updated' | 'none';
 }
 
 // Interface for matched entity data structure

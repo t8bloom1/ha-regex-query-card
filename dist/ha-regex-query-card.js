@@ -1089,7 +1089,7 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
         return {
             type: 'custom:ha-regex-query-card',
             pattern: '.*',
-            title: 'All Entities (Debug)',
+            title: 'Query Card',
             display_type: 'list',
             sort_by: 'name',
             max_entities: 10
@@ -1564,7 +1564,9 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
      * Renders a single entity item
      */
     _renderEntityItem(entityMatch) {
+        var _a;
         const { entity_id, entity, display_name } = entityMatch;
+        const secondaryInfo = ((_a = this.config) === null || _a === void 0 ? void 0 : _a.secondary_info) || 'entity_id';
         return x `
       <div class="entity-item" @click=${() => this._handleEntityClick(entity_id)}>
         <div class="entity-icon">
@@ -1572,10 +1574,28 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
         </div>
         <div class="entity-info">
           <div class="entity-name">${display_name || entity_id}</div>
-          <div class="entity-state">${entity.state}</div>
+          ${secondaryInfo !== 'none' ? x `
+            <div class="entity-secondary">${this._getSecondaryInfo(entity, secondaryInfo)}</div>
+          ` : ''}
         </div>
+        <div class="entity-state">${entity.state}</div>
       </div>
     `;
+    }
+    /**
+     * Gets secondary info based on configuration
+     */
+    _getSecondaryInfo(entity, type) {
+        switch (type) {
+            case 'entity_id':
+                return entity.entity_id;
+            case 'last_changed':
+                return new Date(entity.last_changed).toLocaleString();
+            case 'last_updated':
+                return new Date(entity.last_updated).toLocaleString();
+            default:
+                return entity.entity_id;
+        }
     }
     /**
      * Gets the icon for an entity
@@ -1761,6 +1781,7 @@ HaRegexQueryCard.styles = i$3 `
     .entity-info {
       flex: 1;
       min-width: 0;
+      margin-right: 12px;
     }
 
     .entity-name {
@@ -1771,10 +1792,20 @@ HaRegexQueryCard.styles = i$3 `
       text-overflow: ellipsis;
     }
 
-    .entity-state {
-      font-size: 0.9em;
+    .entity-secondary {
+      font-size: 0.8em;
       color: var(--secondary-text-color);
       margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .entity-state {
+      font-weight: 500;
+      color: var(--primary-text-color);
+      text-align: right;
+      min-width: fit-content;
     }
 
     /* Responsive design */
@@ -1812,13 +1843,13 @@ window.customCards.push({
     getStubConfig: () => ({
         type: 'custom:ha-regex-query-card',
         pattern: '.*',
-        title: 'All Entities (Debug)',
+        title: 'Query Card',
         display_type: 'list',
         sort_by: 'name',
         max_entities: 10
     })
 });
-console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.20  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
+console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.21  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
 
 export { HaRegexQueryCard };
 //# sourceMappingURL=ha-regex-query-card.js.map
