@@ -405,9 +405,9 @@ class EntityMatcher {
             console.log(`RegexQueryCard: Matching pattern "${options.pattern}" against ${totalCount} entities`);
             // Filter entities based on patterns
             const matchedEntities = this.filterEntities(allEntities, patternValidation.compiledPattern, excludeRegex, options.includeUnavailable || false);
-            console.log(`RegexQueryCard: Found ${matchedEntities.length} matches for pattern "${options.pattern}"`);
+            console.log(`RegexQueryCard: Found ${matchedEntities.length} matches for pattern "${options.pattern}" (searching entity IDs and display names)`);
             if (matchedEntities.length > 0) {
-                console.log('RegexQueryCard: Sample matches:', matchedEntities.slice(0, 3).map(e => e.entity_id));
+                console.log('RegexQueryCard: Sample matches:', matchedEntities.slice(0, 3).map(e => `${e.entity_id} (${e.display_name})`));
             }
             // Limit results if specified
             const limitedEntities = options.maxResults
@@ -478,19 +478,23 @@ class EntityMatcher {
                 if (!includeUnavailable && this.isEntityUnavailable(entity)) {
                     continue;
                 }
-                // Test against include pattern
-                if (!includePattern.test(entityId)) {
+                // Get display name for searching
+                const displayName = this.getEntityDisplayName(entity);
+                // Test against include pattern - check both entity ID and display name
+                const matchesEntityId = includePattern.test(entityId);
+                const matchesDisplayName = includePattern.test(displayName);
+                if (!matchesEntityId && !matchesDisplayName) {
                     continue;
                 }
-                // Test against exclude pattern if provided
-                if (excludePattern && excludePattern.test(entityId)) {
+                // Test against exclude pattern if provided - check both entity ID and display name
+                if (excludePattern && (excludePattern.test(entityId) || excludePattern.test(displayName))) {
                     continue;
                 }
                 // Create EntityMatch object
                 const entityMatch = {
                     entity_id: entityId,
                     entity: entity,
-                    display_name: this.getEntityDisplayName(entity),
+                    display_name: displayName,
                     sort_value: this.getEntitySortValue(entity, 'name') // Default sort by name
                 };
                 matches.push(entityMatch);
@@ -1814,7 +1818,7 @@ window.customCards.push({
         max_entities: 10
     })
 });
-console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.19  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
+console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.20  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
 
 export { HaRegexQueryCard };
 //# sourceMappingURL=ha-regex-query-card.js.map

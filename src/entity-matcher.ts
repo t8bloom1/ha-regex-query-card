@@ -114,9 +114,9 @@ export class EntityMatcher {
         options.includeUnavailable || false
       );
 
-      console.log(`RegexQueryCard: Found ${matchedEntities.length} matches for pattern "${options.pattern}"`);
+      console.log(`RegexQueryCard: Found ${matchedEntities.length} matches for pattern "${options.pattern}" (searching entity IDs and display names)`);
       if (matchedEntities.length > 0) {
-        console.log('RegexQueryCard: Sample matches:', matchedEntities.slice(0, 3).map(e => e.entity_id));
+        console.log('RegexQueryCard: Sample matches:', matchedEntities.slice(0, 3).map(e => `${e.entity_id} (${e.display_name})`));
       }
 
       // Limit results if specified
@@ -204,13 +204,19 @@ export class EntityMatcher {
           continue;
         }
 
-        // Test against include pattern
-        if (!includePattern.test(entityId)) {
+        // Get display name for searching
+        const displayName = this.getEntityDisplayName(entity);
+
+        // Test against include pattern - check both entity ID and display name
+        const matchesEntityId = includePattern.test(entityId);
+        const matchesDisplayName = includePattern.test(displayName);
+        
+        if (!matchesEntityId && !matchesDisplayName) {
           continue;
         }
 
-        // Test against exclude pattern if provided
-        if (excludePattern && excludePattern.test(entityId)) {
+        // Test against exclude pattern if provided - check both entity ID and display name
+        if (excludePattern && (excludePattern.test(entityId) || excludePattern.test(displayName))) {
           continue;
         }
 
@@ -218,7 +224,7 @@ export class EntityMatcher {
         const entityMatch: EntityMatch = {
           entity_id: entityId,
           entity: entity,
-          display_name: this.getEntityDisplayName(entity),
+          display_name: displayName,
           sort_value: this.getEntitySortValue(entity, 'name') // Default sort by name
         };
 

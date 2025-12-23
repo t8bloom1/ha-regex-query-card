@@ -76,7 +76,28 @@ columns: 3
 ```
 
 **Configuration Options:**
-- `pattern` - Regex to match entity IDs (required)
+- `pattern` - Regex to match entity IDs and display names (required)
+- `exclude_pattern` - Regex to exclude entities
+
+**Pattern Search Examples:**
+```yaml
+# Search by entity ID
+pattern: "^sensor\\.temperature_.*"
+
+# Search by display name (friendly name)
+pattern: "XS Sensor Battery Level"
+
+# Search for entities with "Battery" in the name
+pattern: "Battery"
+
+# Search for temperature sensors by name or ID
+pattern: "(temperature|Temperature)"
+
+# Complex pattern matching multiple criteria
+pattern: "(battery|Battery|XS.*Sensor)"
+```
+
+**Note**: Patterns now search both entity IDs and display names (friendly names), making it easier to find entities by their human-readable names.
 - `exclude_pattern` - Regex to exclude entities
 - `display_type` - `list` or `grid` layout
 - `columns` - Grid columns (1-6)
