@@ -820,7 +820,7 @@ declare global {
 });
 
 console.info(
-  `%c  REGEX-QUERY-CARD  %c  v1.0.17  `,
+  `%c  REGEX-QUERY-CARD  %c  v1.0.18  `,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
