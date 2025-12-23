@@ -85,6 +85,8 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
    * Required by LovelaceCard interface
    */
   public setConfig(config: RegexQueryCardConfig): void {
+    console.log('RegexQueryCard: setConfig called with:', config);
+    
     if (!config) {
       throw new Error('Invalid configuration');
     }
@@ -146,7 +148,10 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
 
     // Trigger entity update if we have hass
     if (this.hass) {
+      console.log('RegexQueryCard: Hass available, scheduling entity update');
       this._scheduleEntityUpdate();
+    } else {
+      console.log('RegexQueryCard: No hass available yet');
     }
   }
 
@@ -182,12 +187,16 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
    */
   connectedCallback(): void {
     super.connectedCallback();
+    console.log('RegexQueryCard: connectedCallback - element connected to DOM');
     this._connected = true;
     
     // Initialize entity matcher if we have hass
     if (this.hass) {
+      console.log('RegexQueryCard: Hass available in connectedCallback, initializing');
       this._initializeEntityMatcher();
       this._subscribeToStateChanges();
+    } else {
+      console.log('RegexQueryCard: No hass in connectedCallback');
     }
   }
 
@@ -213,14 +222,17 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
    */
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+    console.log('RegexQueryCard: updated called with changed props:', Array.from(changedProps.keys()));
 
     // Handle hass changes
     if (changedProps.has('hass')) {
+      console.log('RegexQueryCard: Hass property changed');
       this._handleHassChange(changedProps);
     }
 
     // Handle config changes
     if (changedProps.has('config')) {
+      console.log('RegexQueryCard: Config property changed');
       this._handleConfigChange();
     }
   }

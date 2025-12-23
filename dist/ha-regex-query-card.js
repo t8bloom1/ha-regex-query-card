@@ -1097,6 +1097,7 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
      * Required by LovelaceCard interface
      */
     setConfig(config) {
+        console.log('RegexQueryCard: setConfig called with:', config);
         if (!config) {
             throw new Error('Invalid configuration');
         }
@@ -1140,7 +1141,11 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
         };
         // Trigger entity update if we have hass
         if (this.hass) {
+            console.log('RegexQueryCard: Hass available, scheduling entity update');
             this._scheduleEntityUpdate();
+        }
+        else {
+            console.log('RegexQueryCard: No hass available yet');
         }
     }
     /**
@@ -1172,11 +1177,16 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
      */
     connectedCallback() {
         super.connectedCallback();
+        console.log('RegexQueryCard: connectedCallback - element connected to DOM');
         this._connected = true;
         // Initialize entity matcher if we have hass
         if (this.hass) {
+            console.log('RegexQueryCard: Hass available in connectedCallback, initializing');
             this._initializeEntityMatcher();
             this._subscribeToStateChanges();
+        }
+        else {
+            console.log('RegexQueryCard: No hass in connectedCallback');
         }
     }
     /**
@@ -1198,12 +1208,15 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
      */
     updated(changedProps) {
         super.updated(changedProps);
+        console.log('RegexQueryCard: updated called with changed props:', Array.from(changedProps.keys()));
         // Handle hass changes
         if (changedProps.has('hass')) {
+            console.log('RegexQueryCard: Hass property changed');
             this._handleHassChange(changedProps);
         }
         // Handle config changes
         if (changedProps.has('config')) {
+            console.log('RegexQueryCard: Config property changed');
             this._handleConfigChange();
         }
     }
