@@ -80,7 +80,7 @@ export class PatternValidator {
 
     // Attempt to compile the regex pattern
     try {
-      const compiledPattern = new RegExp(pattern);
+      const compiledPattern = new RegExp(pattern, 'i');
       
       // Test the pattern with a simple string to catch some runtime issues
       try {

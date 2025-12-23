@@ -133,7 +133,7 @@ class PatternValidator {
         }
         // Attempt to compile the regex pattern
         try {
-            const compiledPattern = new RegExp(pattern);
+            const compiledPattern = new RegExp(pattern, 'i');
             // Test the pattern with a simple string to catch some runtime issues
             try {
                 compiledPattern.test('test.entity_id');
@@ -1074,10 +1074,9 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
     static getStubConfig() {
         return {
             type: 'custom:ha-regex-query-card',
-            pattern: '^sensor\\.temperature_.*',
-            title: 'Temperature Sensors',
-            display_type: 'grid',
-            columns: 3,
+            pattern: 'sensor.*',
+            title: 'All Sensors',
+            display_type: 'list',
             sort_by: 'name',
             max_entities: 20
         };
@@ -1362,7 +1361,7 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
         }
         try {
             // Quick check if entity might match our pattern
-            const regex = new RegExp(this.config.pattern);
+            const regex = new RegExp(this.config.pattern, 'i');
             return regex.test(entityId);
         }
         catch (error) {
@@ -1660,10 +1659,9 @@ window.customCards.push({
     getConfigElement: () => document.createElement('ha-regex-query-card-editor'),
     getStubConfig: () => ({
         type: 'custom:ha-regex-query-card',
-        pattern: '^sensor\\.temperature_.*',
-        title: 'Temperature Sensors',
-        display_type: 'grid',
-        columns: 3,
+        pattern: 'sensor.*',
+        title: 'All Sensors',
+        display_type: 'list',
         sort_by: 'name',
         max_entities: 20
     })

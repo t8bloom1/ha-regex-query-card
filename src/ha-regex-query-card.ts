@@ -72,10 +72,9 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
   public static getStubConfig(): RegexQueryCardConfig {
     return {
       type: 'custom:ha-regex-query-card',
-      pattern: '^sensor\\.temperature_.*',
-      title: 'Temperature Sensors',
-      display_type: 'grid',
-      columns: 3,
+      pattern: 'sensor.*',
+      title: 'All Sensors',
+      display_type: 'list',
       sort_by: 'name',
       max_entities: 20
     };
@@ -443,7 +442,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
 
     try {
       // Quick check if entity might match our pattern
-      const regex = new RegExp(this.config.pattern);
+      const regex = new RegExp(this.config.pattern, 'i');
       return regex.test(entityId);
     } catch (error) {
       // If pattern is invalid, assume all entities are relevant
@@ -762,10 +761,9 @@ declare global {
   getConfigElement: () => document.createElement('ha-regex-query-card-editor'),
   getStubConfig: () => ({
     type: 'custom:ha-regex-query-card',
-    pattern: '^sensor\\.temperature_.*',
-    title: 'Temperature Sensors',
-    display_type: 'grid',
-    columns: 3,
+    pattern: 'sensor.*',
+    title: 'All Sensors',
+    display_type: 'list',
     sort_by: 'name',
     max_entities: 20
   })
