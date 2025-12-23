@@ -1369,7 +1369,7 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
      * Unsubscribes from Home Assistant state changes
      */
     _unsubscribeFromStateChanges() {
-        if (this._unsubscribeStateChanges) {
+        if (this._unsubscribeStateChanges && typeof this._unsubscribeStateChanges === 'function') {
             this._unsubscribeStateChanges();
             this._unsubscribeStateChanges = undefined;
         }

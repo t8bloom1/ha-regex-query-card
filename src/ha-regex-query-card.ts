@@ -437,7 +437,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
    * Unsubscribes from Home Assistant state changes
    */
   private _unsubscribeFromStateChanges(): void {
-    if (this._unsubscribeStateChanges) {
+    if (this._unsubscribeStateChanges && typeof this._unsubscribeStateChanges === 'function') {
       this._unsubscribeStateChanges();
       this._unsubscribeStateChanges = undefined;
     }
