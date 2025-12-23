@@ -398,6 +398,9 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
         pattern_valid: true
       };
 
+      console.log('RegexQueryCard: Updated card state with entities, forcing render');
+      this.requestUpdate();
+
     } catch (error) {
       console.error('Error updating entities:', error);
       
