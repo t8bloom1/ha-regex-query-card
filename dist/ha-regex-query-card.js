@@ -1282,11 +1282,10 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
      */
     async _updateEntities() {
         console.log('RegexQueryCard: _updateEntities called');
-        if (!this.config || !this._entityMatcher || !this.isConnected) {
-            console.log('RegexQueryCard: Skipping update - missing config, matcher, or not connected', {
+        if (!this.config || !this._entityMatcher) {
+            console.log('RegexQueryCard: Skipping update - missing config or matcher', {
                 hasConfig: !!this.config,
-                hasMatcher: !!this._entityMatcher,
-                connected: this.isConnected
+                hasMatcher: !!this._entityMatcher
             });
             return;
         }
@@ -1721,7 +1720,7 @@ window.customCards.push({
         max_entities: 10
     })
 });
-console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.16  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
+console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.17  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
 
 export { HaRegexQueryCard };
 //# sourceMappingURL=ha-regex-query-card.js.map

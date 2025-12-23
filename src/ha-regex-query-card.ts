@@ -318,11 +318,10 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
   private async _updateEntities(): Promise<void> {
     console.log('RegexQueryCard: _updateEntities called');
     
-    if (!this.config || !this._entityMatcher || !this.isConnected) {
-      console.log('RegexQueryCard: Skipping update - missing config, matcher, or not connected', {
+    if (!this.config || !this._entityMatcher) {
+      console.log('RegexQueryCard: Skipping update - missing config or matcher', {
         hasConfig: !!this.config,
-        hasMatcher: !!this._entityMatcher,
-        connected: this.isConnected
+        hasMatcher: !!this._entityMatcher
       });
       return;
     }
@@ -821,7 +820,7 @@ declare global {
 });
 
 console.info(
-  `%c  REGEX-QUERY-CARD  %c  v1.0.16  `,
+  `%c  REGEX-QUERY-CARD  %c  v1.0.17  `,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
