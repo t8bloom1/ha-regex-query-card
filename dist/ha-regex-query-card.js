@@ -1141,10 +1141,10 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
             type: 'custom:ha-regex-query-card',
             pattern: '.*',
             title: 'Query Card',
+            value_filter: '',
             display_type: 'list',
             sort_by: 'name',
-            secondary_info: 'entity_id',
-            value_filter: '',
+            secondary_info: 'none',
             max_entities: 10
         };
     }
@@ -1620,10 +1620,10 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
     _renderEntityItem(entityMatch) {
         var _a;
         const { entity_id, entity, display_name } = entityMatch;
-        const secondaryInfo = ((_a = this.config) === null || _a === void 0 ? void 0 : _a.secondary_info) || 'entity_id';
+        const secondaryInfo = ((_a = this.config) === null || _a === void 0 ? void 0 : _a.secondary_info) || 'none';
         return x `
       <div class="entity-item" @click=${() => this._handleEntityClick(entity_id)}>
-        <div class="entity-icon">
+        <div class="entity-icon" style="color: ${this._getEntityIconColor(entity)}">
           <ha-icon icon="${this._getEntityIcon(entity)}"></ha-icon>
         </div>
         <div class="entity-info">
@@ -1704,11 +1704,99 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
         }
     }
     /**
-     * Gets the icon for an entity
+     * Gets the icon for an entity with better defaults
      */
     _getEntityIcon(entity) {
         var _a;
-        return ((_a = entity.attributes) === null || _a === void 0 ? void 0 : _a.icon) || 'mdi:help-circle';
+        // Use entity's custom icon if available
+        if ((_a = entity.attributes) === null || _a === void 0 ? void 0 : _a.icon) {
+            return entity.attributes.icon;
+        }
+        // Get domain from entity_id
+        const domain = entity.entity_id.split('.')[0];
+        // Domain-based icon mapping
+        const domainIcons = {
+            'sensor': 'mdi:gauge',
+            'binary_sensor': 'mdi:radiobox-marked',
+            'light': 'mdi:lightbulb',
+            'switch': 'mdi:toggle-switch',
+            'climate': 'mdi:thermostat',
+            'cover': 'mdi:window-shutter',
+            'fan': 'mdi:fan',
+            'lock': 'mdi:lock',
+            'camera': 'mdi:camera',
+            'media_player': 'mdi:cast',
+            'device_tracker': 'mdi:account',
+            'person': 'mdi:account',
+            'zone': 'mdi:map-marker-radius',
+            'automation': 'mdi:robot',
+            'script': 'mdi:script-text',
+            'scene': 'mdi:palette',
+            'input_boolean': 'mdi:toggle-switch-outline',
+            'input_number': 'mdi:ray-vertex',
+            'input_select': 'mdi:format-list-bulleted',
+            'input_text': 'mdi:textbox',
+            'timer': 'mdi:timer',
+            'counter': 'mdi:counter',
+            'weather': 'mdi:weather-cloudy',
+            'sun': 'mdi:white-balance-sunny',
+            'update': 'mdi:package-up'
+        };
+        return domainIcons[domain] || 'mdi:help-circle';
+    }
+    /**
+     * Gets the color for an entity icon based on state
+     */
+    _getEntityIconColor(entity) {
+        var _a, _b;
+        const state = (_a = entity.state) === null || _a === void 0 ? void 0 : _a.toLowerCase();
+        const domain = entity.entity_id.split('.')[0];
+        // Handle unavailable/unknown states
+        if (['unavailable', 'unknown', 'none'].includes(state)) {
+            return 'var(--disabled-text-color, #9e9e9e)';
+        }
+        // Domain and state-specific coloring
+        switch (domain) {
+            case 'light':
+                return state === 'on' ? 'var(--amber-color, #ff9800)' : 'var(--disabled-text-color, #9e9e9e)';
+            case 'switch':
+            case 'input_boolean':
+                return state === 'on' ? 'var(--primary-color, #03a9f4)' : 'var(--disabled-text-color, #9e9e9e)';
+            case 'binary_sensor':
+                return state === 'on' ? 'var(--error-color, #f44336)' : 'var(--success-color, #4caf50)';
+            case 'lock':
+                return state === 'locked' ? 'var(--success-color, #4caf50)' : 'var(--error-color, #f44336)';
+            case 'cover':
+                return state === 'open' ? 'var(--primary-color, #03a9f4)' : 'var(--disabled-text-color, #9e9e9e)';
+            case 'climate':
+                return state === 'heat' ? 'var(--deep-orange-color, #ff5722)' :
+                    state === 'cool' ? 'var(--light-blue-color, #03a9f4)' :
+                        'var(--primary-color, #03a9f4)';
+            case 'fan':
+                return state === 'on' ? 'var(--primary-color, #03a9f4)' : 'var(--disabled-text-color, #9e9e9e)';
+            case 'sensor':
+                // Color sensors based on device class and value
+                const deviceClass = (_b = entity.attributes) === null || _b === void 0 ? void 0 : _b.device_class;
+                const numericState = parseFloat(state);
+                if (deviceClass === 'battery' && !isNaN(numericState)) {
+                    if (numericState <= 15)
+                        return 'var(--error-color, #f44336)';
+                    if (numericState <= 30)
+                        return 'var(--warning-color, #ff9800)';
+                    return 'var(--success-color, #4caf50)';
+                }
+                if (deviceClass === 'temperature') {
+                    return 'var(--deep-orange-color, #ff5722)';
+                }
+                if (deviceClass === 'humidity') {
+                    return 'var(--light-blue-color, #03a9f4)';
+                }
+                return 'var(--primary-color, #03a9f4)';
+            case 'update':
+                return state === 'on' ? 'var(--warning-color, #ff9800)' : 'var(--success-color, #4caf50)';
+            default:
+                return 'var(--primary-color, #03a9f4)';
+        }
     }
     /**
      * Handles entity click
@@ -1948,14 +2036,14 @@ window.customCards.push({
         type: 'custom:ha-regex-query-card',
         pattern: '.*',
         title: 'Query Card',
+        value_filter: '',
         display_type: 'list',
         sort_by: 'name',
-        secondary_info: 'entity_id',
-        value_filter: '',
+        secondary_info: 'none',
         max_entities: 10
     })
 });
-console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.24  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
+console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.25  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
 
 export { HaRegexQueryCard };
 //# sourceMappingURL=ha-regex-query-card.js.map
