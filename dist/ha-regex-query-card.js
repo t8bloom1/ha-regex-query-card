@@ -1068,6 +1068,21 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
         };
     }
     /**
+     * Provides default configuration for card picker
+     * Required by LovelaceCard interface
+     */
+    static getStubConfig() {
+        return {
+            type: 'custom:ha-regex-query-card',
+            pattern: '^sensor\\.temperature_.*',
+            title: 'Temperature Sensors',
+            display_type: 'grid',
+            columns: 3,
+            sort_by: 'name',
+            max_entities: 20
+        };
+    }
+    /**
      * Sets the card configuration
      * Required by LovelaceCard interface
      */
@@ -1641,7 +1656,17 @@ window.customCards.push({
     name: 'Regex Query Card',
     description: 'Display entities matching regex patterns',
     preview: false,
-    documentationURL: 'https://github.com/t8bloom1/ha-regex-query-card'
+    documentationURL: 'https://github.com/t8bloom1/ha-regex-query-card',
+    getConfigElement: () => document.createElement('ha-regex-query-card-editor'),
+    getStubConfig: () => ({
+        type: 'custom:ha-regex-query-card',
+        pattern: '^sensor\\.temperature_.*',
+        title: 'Temperature Sensors',
+        display_type: 'grid',
+        columns: 3,
+        sort_by: 'name',
+        max_entities: 20
+    })
 });
 console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.1  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
 

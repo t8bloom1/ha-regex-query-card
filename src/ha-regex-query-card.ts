@@ -66,6 +66,22 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
   };
 
   /**
+   * Provides default configuration for card picker
+   * Required by LovelaceCard interface
+   */
+  public static getStubConfig(): RegexQueryCardConfig {
+    return {
+      type: 'custom:ha-regex-query-card',
+      pattern: '^sensor\\.temperature_.*',
+      title: 'Temperature Sensors',
+      display_type: 'grid',
+      columns: 3,
+      sort_by: 'name',
+      max_entities: 20
+    };
+  }
+
+  /**
    * Sets the card configuration
    * Required by LovelaceCard interface
    */
@@ -742,7 +758,17 @@ declare global {
   name: 'Regex Query Card',
   description: 'Display entities matching regex patterns',
   preview: false,
-  documentationURL: 'https://github.com/t8bloom1/ha-regex-query-card'
+  documentationURL: 'https://github.com/t8bloom1/ha-regex-query-card',
+  getConfigElement: () => document.createElement('ha-regex-query-card-editor'),
+  getStubConfig: () => ({
+    type: 'custom:ha-regex-query-card',
+    pattern: '^sensor\\.temperature_.*',
+    title: 'Temperature Sensors',
+    display_type: 'grid',
+    columns: 3,
+    sort_by: 'name',
+    max_entities: 20
+  })
 });
 
 console.info(
