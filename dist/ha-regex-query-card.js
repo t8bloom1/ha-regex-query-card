@@ -1271,12 +1271,20 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
      * Updates the entity list based on current configuration
      */
     async _updateEntities() {
+        console.log('RegexQueryCard: _updateEntities called');
         if (!this.config || !this._entityMatcher || !this._connected) {
+            console.log('RegexQueryCard: Skipping update - missing config, matcher, or not connected', {
+                hasConfig: !!this.config,
+                hasMatcher: !!this._entityMatcher,
+                connected: this._connected
+            });
             return;
         }
+        console.log('RegexQueryCard: Starting entity update with pattern:', this.config.pattern);
         // Throttle updates to prevent excessive re-rendering
         const now = Date.now();
         if (now - this._lastUpdateTime < this._minUpdateInterval) {
+            console.log('RegexQueryCard: Throttling update');
             return;
         }
         this._lastUpdateTime = now;
@@ -1289,6 +1297,11 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
                 excludePattern: this.config.exclude_pattern,
                 includeUnavailable: false,
                 maxResults: this.config.max_entities
+            });
+            console.log('RegexQueryCard: Match result:', {
+                entityCount: matchResult.entities.length,
+                totalCount: matchResult.totalCount,
+                error: matchResult.error
             });
             if (matchResult.error) {
                 this._cardState = Object.assign(Object.assign({}, this._cardState), { loading: false, error: matchResult.error, pattern_valid: false, entities: [] });
