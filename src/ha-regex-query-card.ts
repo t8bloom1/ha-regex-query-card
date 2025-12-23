@@ -72,11 +72,11 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
   public static getStubConfig(): RegexQueryCardConfig {
     return {
       type: 'custom:ha-regex-query-card',
-      pattern: 'sensor.*',
-      title: 'All Sensors',
+      pattern: '.*',
+      title: 'All Entities (Debug)',
       display_type: 'list',
       sort_by: 'name',
-      max_entities: 20
+      max_entities: 10
     };
   }
 
@@ -789,11 +789,11 @@ declare global {
   getConfigElement: () => document.createElement('ha-regex-query-card-editor'),
   getStubConfig: () => ({
     type: 'custom:ha-regex-query-card',
-    pattern: 'sensor.*',
-    title: 'All Sensors',
+    pattern: '.*',
+    title: 'All Entities (Debug)',
     display_type: 'list',
     sort_by: 'name',
-    max_entities: 20
+    max_entities: 10
   })
 });
 

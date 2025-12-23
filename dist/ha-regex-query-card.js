@@ -1085,11 +1085,11 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
     static getStubConfig() {
         return {
             type: 'custom:ha-regex-query-card',
-            pattern: 'sensor.*',
-            title: 'All Sensors',
+            pattern: '.*',
+            title: 'All Entities (Debug)',
             display_type: 'list',
             sort_by: 'name',
-            max_entities: 20
+            max_entities: 10
         };
     }
     /**
@@ -1696,11 +1696,11 @@ window.customCards.push({
     getConfigElement: () => document.createElement('ha-regex-query-card-editor'),
     getStubConfig: () => ({
         type: 'custom:ha-regex-query-card',
-        pattern: 'sensor.*',
-        title: 'All Sensors',
+        pattern: '.*',
+        title: 'All Entities (Debug)',
         display_type: 'list',
         sort_by: 'name',
-        max_entities: 20
+        max_entities: 10
     })
 });
 console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.1  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
