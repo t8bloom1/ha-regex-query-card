@@ -72,12 +72,13 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
   public static getStubConfig(): RegexQueryCardConfig {
     return {
       type: 'custom:ha-regex-query-card',
-      pattern: '.*',
       title: 'Query Card',
       value_filter: '',
+      pattern: '.*',
+      secondary_info: 'none',
       display_type: 'list',
       sort_by: 'name',
-      secondary_info: 'none',
+      max_entities: 20,
       max_entities: 10
     };
   }
@@ -749,7 +750,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
   }
 
   /**
-   * Gets the icon for an entity with better defaults
+   * Gets the icon for an entity with better type-specific matching
    */
   private _getEntityIcon(entity: any): string {
     // Use entity's custom icon if available
@@ -757,28 +758,133 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
       return entity.attributes.icon;
     }
 
-    // Get domain from entity_id
+    // Get domain and device class
     const domain = entity.entity_id.split('.')[0];
+    const deviceClass = entity.attributes?.device_class;
+    const entityId = entity.entity_id.toLowerCase();
+    const friendlyName = (entity.attributes?.friendly_name || '').toLowerCase();
     
-    // Domain-based icon mapping
+    // Specific icon matching based on device class and entity characteristics
+    if (domain === 'sensor') {
+      // Battery sensors
+      if (deviceClass === 'battery' || entityId.includes('battery') || friendlyName.includes('battery')) {
+        const batteryLevel = parseFloat(entity.state);
+        if (!isNaN(batteryLevel)) {
+          if (batteryLevel <= 10) return 'mdi:battery-outline';
+          if (batteryLevel <= 20) return 'mdi:battery-10';
+          if (batteryLevel <= 30) return 'mdi:battery-20';
+          if (batteryLevel <= 40) return 'mdi:battery-30';
+          if (batteryLevel <= 50) return 'mdi:battery-40';
+          if (batteryLevel <= 60) return 'mdi:battery-50';
+          if (batteryLevel <= 70) return 'mdi:battery-60';
+          if (batteryLevel <= 80) return 'mdi:battery-70';
+          if (batteryLevel <= 90) return 'mdi:battery-80';
+          if (batteryLevel <= 95) return 'mdi:battery-90';
+          return 'mdi:battery';
+        }
+        return 'mdi:battery';
+      }
+      
+      // Temperature sensors
+      if (deviceClass === 'temperature' || entityId.includes('temperature') || friendlyName.includes('temperature')) {
+        return 'mdi:thermometer';
+      }
+      
+      // Humidity sensors
+      if (deviceClass === 'humidity' || entityId.includes('humidity') || friendlyName.includes('humidity')) {
+        return 'mdi:water-percent';
+      }
+      
+      // Power/Energy sensors
+      if (deviceClass === 'power' || entityId.includes('power') || friendlyName.includes('power')) {
+        return 'mdi:flash';
+      }
+      if (deviceClass === 'energy' || entityId.includes('energy') || friendlyName.includes('energy')) {
+        return 'mdi:lightning-bolt';
+      }
+      
+      // Voltage sensors
+      if (deviceClass === 'voltage' || entityId.includes('voltage') || friendlyName.includes('voltage')) {
+        return 'mdi:sine-wave';
+      }
+      
+      // Current sensors
+      if (deviceClass === 'current' || entityId.includes('current') || friendlyName.includes('current')) {
+        return 'mdi:current-ac';
+      }
+      
+      // Pressure sensors
+      if (deviceClass === 'pressure' || entityId.includes('pressure') || friendlyName.includes('pressure')) {
+        return 'mdi:gauge';
+      }
+      
+      // Illuminance sensors
+      if (deviceClass === 'illuminance' || entityId.includes('illuminance') || entityId.includes('light') || friendlyName.includes('light')) {
+        return 'mdi:brightness-6';
+      }
+      
+      // Motion/occupancy sensors
+      if (entityId.includes('motion') || friendlyName.includes('motion')) {
+        return 'mdi:motion-sensor';
+      }
+      
+      // Door/window sensors
+      if (entityId.includes('door') || friendlyName.includes('door')) {
+        return 'mdi:door';
+      }
+      if (entityId.includes('window') || friendlyName.includes('window')) {
+        return 'mdi:window-open';
+      }
+      
+      // Signal strength
+      if (entityId.includes('signal') || entityId.includes('rssi') || friendlyName.includes('signal')) {
+        return 'mdi:wifi-strength-4';
+      }
+      
+      // Node status
+      if (entityId.includes('node_status') || friendlyName.includes('node status')) {
+        return 'mdi:check-network';
+      }
+    }
+    
+    // Binary sensors with specific types
+    if (domain === 'binary_sensor') {
+      if (deviceClass === 'motion' || entityId.includes('motion') || friendlyName.includes('motion')) {
+        return 'mdi:motion-sensor';
+      }
+      if (deviceClass === 'door' || entityId.includes('door') || friendlyName.includes('door')) {
+        return entity.state === 'on' ? 'mdi:door-open' : 'mdi:door-closed';
+      }
+      if (deviceClass === 'window' || entityId.includes('window') || friendlyName.includes('window')) {
+        return entity.state === 'on' ? 'mdi:window-open' : 'mdi:window-closed';
+      }
+      if (deviceClass === 'moisture' || entityId.includes('leak') || friendlyName.includes('leak')) {
+        return 'mdi:water-alert';
+      }
+      if (deviceClass === 'connectivity' || entityId.includes('connectivity')) {
+        return entity.state === 'on' ? 'mdi:check-network' : 'mdi:close-network';
+      }
+    }
+
+    // Domain-based fallback icons
     const domainIcons: { [key: string]: string } = {
       'sensor': 'mdi:gauge',
       'binary_sensor': 'mdi:radiobox-marked',
-      'light': 'mdi:lightbulb',
-      'switch': 'mdi:toggle-switch',
+      'light': entity.state === 'on' ? 'mdi:lightbulb-on' : 'mdi:lightbulb-outline',
+      'switch': entity.state === 'on' ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off',
       'climate': 'mdi:thermostat',
-      'cover': 'mdi:window-shutter',
-      'fan': 'mdi:fan',
-      'lock': 'mdi:lock',
+      'cover': entity.state === 'open' ? 'mdi:window-shutter-open' : 'mdi:window-shutter',
+      'fan': entity.state === 'on' ? 'mdi:fan' : 'mdi:fan-off',
+      'lock': entity.state === 'locked' ? 'mdi:lock' : 'mdi:lock-open',
       'camera': 'mdi:camera',
       'media_player': 'mdi:cast',
-      'device_tracker': 'mdi:account',
+      'device_tracker': 'mdi:account-circle',
       'person': 'mdi:account',
       'zone': 'mdi:map-marker-radius',
       'automation': 'mdi:robot',
       'script': 'mdi:script-text',
       'scene': 'mdi:palette',
-      'input_boolean': 'mdi:toggle-switch-outline',
+      'input_boolean': entity.state === 'on' ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off',
       'input_number': 'mdi:ray-vertex',
       'input_select': 'mdi:format-list-bulleted',
       'input_text': 'mdi:textbox',
@@ -786,7 +892,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
       'counter': 'mdi:counter',
       'weather': 'mdi:weather-cloudy',
       'sun': 'mdi:white-balance-sunny',
-      'update': 'mdi:package-up'
+      'update': entity.state === 'on' ? 'mdi:package-up' : 'mdi:package-check'
     };
 
     return domainIcons[domain] || 'mdi:help-circle';
@@ -1098,18 +1204,19 @@ declare global {
   getConfigElement: () => document.createElement('ha-regex-query-card-editor'),
   getStubConfig: () => ({
     type: 'custom:ha-regex-query-card',
-    pattern: '.*',
     title: 'Query Card',
     value_filter: '',
+    pattern: '.*',
+    secondary_info: 'none',
     display_type: 'list',
     sort_by: 'name',
-    secondary_info: 'none',
+    max_entities: 20,
     max_entities: 10
   })
 });
 
 console.info(
-  `%c  REGEX-QUERY-CARD  %c  v1.0.25  `,
+  `%c  REGEX-QUERY-CARD  %c  v1.0.26  `,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
