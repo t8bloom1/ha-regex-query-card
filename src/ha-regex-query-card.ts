@@ -548,7 +548,10 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
    * Renders the card content
    */
   protected render() {
+    console.log('RegexQueryCard: render() called with config:', !!this.config);
+    
     if (!this.config) {
+      console.log('RegexQueryCard: Rendering no config state');
       return html`
         <ha-card>
           <div class="card-content">
@@ -560,6 +563,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    console.log('RegexQueryCard: Rendering main card with title:', this.config.title);
     return html`
       <ha-card>
         ${this.config.title ? html`

@@ -1463,7 +1463,9 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
      * Renders the card content
      */
     render() {
+        console.log('RegexQueryCard: render() called with config:', !!this.config);
         if (!this.config) {
+            console.log('RegexQueryCard: Rendering no config state');
             return x `
         <ha-card>
           <div class="card-content">
@@ -1474,6 +1476,7 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
         </ha-card>
       `;
         }
+        console.log('RegexQueryCard: Rendering main card with title:', this.config.title);
         return x `
       <ha-card>
         ${this.config.title ? x `
