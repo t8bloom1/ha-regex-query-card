@@ -111,7 +111,8 @@ export class EntityMatcher {
         allEntities,
         patternValidation.compiledPattern,
         excludeRegex,
-        options.includeUnavailable || false
+        options.includeUnavailable || false,
+        options.valueFilter
       );
 
       console.log(`RegexQueryCard: Found ${matchedEntities.length} matches for pattern "${options.pattern}" (searching entity IDs and display names)`);
@@ -182,18 +183,20 @@ export class EntityMatcher {
   }
 
   /**
-   * Filters entities based on include and exclude patterns
+   * Filters entities based on include and exclude patterns, plus value filters
    * @param entities Array of entities to filter
    * @param includePattern Compiled regex for inclusion
    * @param excludePattern Optional compiled regex for exclusion
    * @param includeUnavailable Whether to include unavailable entities
+   * @param valueFilter Optional value filter expression (e.g., "<55", ">20", "=on")
    * @returns Filtered array of EntityMatch objects
    */
   private filterEntities(
     entities: Array<{ entityId: string; entity: HassEntity }>,
     includePattern: RegExp,
     excludePattern?: RegExp,
-    includeUnavailable: boolean = false
+    includeUnavailable: boolean = false,
+    valueFilter?: string
   ): EntityMatch[] {
     const matches: EntityMatch[] = [];
 
@@ -228,6 +231,11 @@ export class EntityMatcher {
           sort_value: this.getEntitySortValue(entity, 'name') // Default sort by name
         };
 
+        // Apply value filter if provided
+        if (valueFilter && !this.matchesValueFilter(entity, valueFilter)) {
+          continue;
+        }
+
         matches.push(entityMatch);
       } catch (error) {
         // Skip entities that cause errors during processing
@@ -237,6 +245,57 @@ export class EntityMatcher {
     }
 
     return matches;
+  }
+
+  /**
+   * Checks if an entity's state matches the value filter
+   * @param entity The entity to check
+   * @param valueFilter Filter expression (e.g., "<55", ">20", "=on", "!=off")
+   * @returns True if entity matches the filter
+   */
+  private matchesValueFilter(entity: HassEntity, valueFilter: string): boolean {
+    const state = entity.state;
+    
+    // Handle unavailable/unknown states
+    if (['unavailable', 'unknown', 'none'].includes(state.toLowerCase())) {
+      return false;
+    }
+
+    // Parse the filter expression
+    const match = valueFilter.match(/^(<=|>=|!=|<|>|=)(.+)$/);
+    if (!match) {
+      console.warn(`Invalid value filter format: ${valueFilter}`);
+      return true; // Don't filter if invalid format
+    }
+
+    const [, operator, filterValue] = match;
+    const trimmedFilterValue = filterValue.trim();
+
+    // Try to parse as number first
+    const numericState = parseFloat(state);
+    const numericFilter = parseFloat(trimmedFilterValue);
+
+    if (!isNaN(numericState) && !isNaN(numericFilter)) {
+      // Numeric comparison
+      switch (operator) {
+        case '<': return numericState < numericFilter;
+        case '<=': return numericState <= numericFilter;
+        case '>': return numericState > numericFilter;
+        case '>=': return numericState >= numericFilter;
+        case '=': return numericState === numericFilter;
+        case '!=': return numericState !== numericFilter;
+        default: return true;
+      }
+    } else {
+      // String comparison
+      switch (operator) {
+        case '=': return state.toLowerCase() === trimmedFilterValue.toLowerCase();
+        case '!=': return state.toLowerCase() !== trimmedFilterValue.toLowerCase();
+        default: 
+          console.warn(`Operator ${operator} not supported for string values`);
+          return true;
+      }
+    }
   }
 
   /**

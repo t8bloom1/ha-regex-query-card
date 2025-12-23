@@ -77,6 +77,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
       display_type: 'list',
       sort_by: 'name',
       secondary_info: 'entity_id',
+      value_filter: '',
       max_entities: 10
     };
   }
@@ -349,6 +350,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
       const matchResult: EntityMatchResult = await this._entityMatcher.matchEntities({
         pattern: this.config.pattern,
         excludePattern: this.config.exclude_pattern,
+        valueFilter: this.config.value_filter,
         includeUnavailable: false,
         maxResults: this.config.max_entities
       });
@@ -997,12 +999,13 @@ declare global {
     display_type: 'list',
     sort_by: 'name',
     secondary_info: 'entity_id',
+    value_filter: '',
     max_entities: 10
   })
 });
 
 console.info(
-  `%c  REGEX-QUERY-CARD  %c  v1.0.23  `,
+  `%c  REGEX-QUERY-CARD  %c  v1.0.24  `,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );

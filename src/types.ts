@@ -107,6 +107,7 @@ export interface RegexQueryCardConfig extends LovelaceCardConfig {
   type: 'custom:ha-regex-query-card';
   pattern: string;
   exclude_pattern?: string;
+  value_filter?: string;
   display_type: 'list' | 'grid';
   columns?: number;
   sort_by?: 'name' | 'state' | 'last_changed';

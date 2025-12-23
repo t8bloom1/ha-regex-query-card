@@ -77,6 +77,7 @@ columns: 3
 
 **Configuration Options:**
 - `pattern` - Regex to match entity IDs and display names (required)
+- `value_filter` - Filter by entity state values (e.g., "<55", ">20", "=on")
 - `exclude_pattern` - Regex to exclude entities
 
 **Pattern Search Examples:**
@@ -97,7 +98,38 @@ pattern: "(temperature|Temperature)"
 pattern: "(battery|Battery|XS.*Sensor)"
 ```
 
-**Note**: Patterns now search both entity IDs and display names (friendly names), making it easier to find entities by their human-readable names.
+**Value Filter Examples:**
+```yaml
+# Battery levels less than 55%
+pattern: "Battery"
+value_filter: "<55"
+
+# Temperature above 20 degrees
+pattern: "temperature"
+value_filter: ">20"
+
+# Entities with specific state
+pattern: "light"
+value_filter: "=on"
+
+# Humidity not equal to 0
+pattern: "humidity"
+value_filter: "!=0"
+
+# Power consumption less than or equal to 100W
+pattern: "power"
+value_filter: "<=100"
+```
+
+**Supported Value Filter Operators:**
+- `<` - Less than
+- `<=` - Less than or equal
+- `>` - Greater than  
+- `>=` - Greater than or equal
+- `=` - Equal to
+- `!=` - Not equal to
+
+**Note**: Patterns search both entity IDs and display names (friendly names). Value filters work on numeric values and string states.
 - `exclude_pattern` - Regex to exclude entities
 - `display_type` - `list` or `grid` layout
 - `columns` - Grid columns (1-6)

@@ -404,7 +404,7 @@ class EntityMatcher {
             const totalCount = allEntities.length;
             console.log(`RegexQueryCard: Matching pattern "${options.pattern}" against ${totalCount} entities`);
             // Filter entities based on patterns
-            const matchedEntities = this.filterEntities(allEntities, patternValidation.compiledPattern, excludeRegex, options.includeUnavailable || false);
+            const matchedEntities = this.filterEntities(allEntities, patternValidation.compiledPattern, excludeRegex, options.includeUnavailable || false, options.valueFilter);
             console.log(`RegexQueryCard: Found ${matchedEntities.length} matches for pattern "${options.pattern}" (searching entity IDs and display names)`);
             if (matchedEntities.length > 0) {
                 console.log('RegexQueryCard: Sample matches:', matchedEntities.slice(0, 3).map(e => `${e.entity_id} (${e.display_name})`));
@@ -463,14 +463,15 @@ class EntityMatcher {
         return entities;
     }
     /**
-     * Filters entities based on include and exclude patterns
+     * Filters entities based on include and exclude patterns, plus value filters
      * @param entities Array of entities to filter
      * @param includePattern Compiled regex for inclusion
      * @param excludePattern Optional compiled regex for exclusion
      * @param includeUnavailable Whether to include unavailable entities
+     * @param valueFilter Optional value filter expression (e.g., "<55", ">20", "=on")
      * @returns Filtered array of EntityMatch objects
      */
-    filterEntities(entities, includePattern, excludePattern, includeUnavailable = false) {
+    filterEntities(entities, includePattern, excludePattern, includeUnavailable = false, valueFilter) {
         const matches = [];
         for (const { entityId, entity } of entities) {
             try {
@@ -497,6 +498,10 @@ class EntityMatcher {
                     display_name: displayName,
                     sort_value: this.getEntitySortValue(entity, 'name') // Default sort by name
                 };
+                // Apply value filter if provided
+                if (valueFilter && !this.matchesValueFilter(entity, valueFilter)) {
+                    continue;
+                }
                 matches.push(entityMatch);
             }
             catch (error) {
@@ -506,6 +511,52 @@ class EntityMatcher {
             }
         }
         return matches;
+    }
+    /**
+     * Checks if an entity's state matches the value filter
+     * @param entity The entity to check
+     * @param valueFilter Filter expression (e.g., "<55", ">20", "=on", "!=off")
+     * @returns True if entity matches the filter
+     */
+    matchesValueFilter(entity, valueFilter) {
+        const state = entity.state;
+        // Handle unavailable/unknown states
+        if (['unavailable', 'unknown', 'none'].includes(state.toLowerCase())) {
+            return false;
+        }
+        // Parse the filter expression
+        const match = valueFilter.match(/^(<=|>=|!=|<|>|=)(.+)$/);
+        if (!match) {
+            console.warn(`Invalid value filter format: ${valueFilter}`);
+            return true; // Don't filter if invalid format
+        }
+        const [, operator, filterValue] = match;
+        const trimmedFilterValue = filterValue.trim();
+        // Try to parse as number first
+        const numericState = parseFloat(state);
+        const numericFilter = parseFloat(trimmedFilterValue);
+        if (!isNaN(numericState) && !isNaN(numericFilter)) {
+            // Numeric comparison
+            switch (operator) {
+                case '<': return numericState < numericFilter;
+                case '<=': return numericState <= numericFilter;
+                case '>': return numericState > numericFilter;
+                case '>=': return numericState >= numericFilter;
+                case '=': return numericState === numericFilter;
+                case '!=': return numericState !== numericFilter;
+                default: return true;
+            }
+        }
+        else {
+            // String comparison
+            switch (operator) {
+                case '=': return state.toLowerCase() === trimmedFilterValue.toLowerCase();
+                case '!=': return state.toLowerCase() !== trimmedFilterValue.toLowerCase();
+                default:
+                    console.warn(`Operator ${operator} not supported for string values`);
+                    return true;
+            }
+        }
     }
     /**
      * Determines if an entity is unavailable
@@ -1093,6 +1144,7 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
             display_type: 'list',
             sort_by: 'name',
             secondary_info: 'entity_id',
+            value_filter: '',
             max_entities: 10
         };
     }
@@ -1309,6 +1361,7 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
             const matchResult = await this._entityMatcher.matchEntities({
                 pattern: this.config.pattern,
                 excludePattern: this.config.exclude_pattern,
+                valueFilter: this.config.value_filter,
                 includeUnavailable: false,
                 maxResults: this.config.max_entities
             });
@@ -1898,10 +1951,11 @@ window.customCards.push({
         display_type: 'list',
         sort_by: 'name',
         secondary_info: 'entity_id',
+        value_filter: '',
         max_entities: 10
     })
 });
-console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.23  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
+console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.24  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
 
 export { HaRegexQueryCard };
 //# sourceMappingURL=ha-regex-query-card.js.map
