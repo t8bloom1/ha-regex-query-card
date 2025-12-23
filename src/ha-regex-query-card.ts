@@ -76,6 +76,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
       title: 'Query Card',
       display_type: 'list',
       sort_by: 'name',
+      secondary_info: 'entity_id',
       max_entities: 10
     };
   }
@@ -860,17 +861,15 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
     .entity-item {
       display: flex;
       align-items: center;
-      padding: 12px;
-      background: var(--card-background-color, #fff);
-      border: 1px solid var(--divider-color, #e0e0e0);
-      border-radius: 8px;
+      padding: 8px 0;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: background-color 0.2s ease;
     }
 
     .entity-item:hover {
       background: var(--secondary-background-color, #f5f5f5);
-      border-color: var(--primary-color, #03a9f4);
+      border-radius: 4px;
+      padding: 8px 12px;
     }
 
     .entity-icon {
@@ -947,12 +946,13 @@ declare global {
     title: 'Query Card',
     display_type: 'list',
     sort_by: 'name',
+    secondary_info: 'entity_id',
     max_entities: 10
   })
 });
 
 console.info(
-  `%c  REGEX-QUERY-CARD  %c  v1.0.21  `,
+  `%c  REGEX-QUERY-CARD  %c  v1.0.22  `,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
