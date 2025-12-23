@@ -71,6 +71,14 @@ export class HaRegexEntityRenderer extends LitElement {
    * Renders the entity display based on configuration
    */
   protected render(): TemplateResult {
+    console.log('EntityRenderer: render() called with:', {
+      loading: this.loading,
+      error: this.error,
+      entitiesLength: this.entities.length,
+      hasConfig: !!this.config,
+      hasHass: !!this.hass
+    });
+
     if (this.loading) {
       return this._renderLoading();
     }
