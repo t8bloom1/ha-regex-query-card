@@ -1537,7 +1537,7 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
         return this._renderEntities();
     }
     /**
-     * Renders entities using the entity renderer component
+     * Renders entities directly in the main card
      */
     _renderEntities() {
         console.log('RegexQueryCard: _renderEntities called with:', {
@@ -1546,17 +1546,50 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
             hasHass: !!this.hass,
             hasConfig: !!this.config
         });
+        if (!this.config || !this.hass) {
+            return x `<div class="error">Missing configuration or Home Assistant instance</div>`;
+        }
+        const displayMode = this.config.display_type || 'list';
         return x `
-      <ha-regex-entity-renderer
-        .hass=${this.hass}
-        .config=${this.config}
-        .entities=${this._cardState.entities}
-        .loading=${this._cardState.loading}
-        .error=${this._cardState.error}
-        @hass-more-info=${this._handleEntityMoreInfo}
-        @entity-action=${this._handleEntityAction}
-      ></ha-regex-entity-renderer>
+      <div class="entity-${displayMode}">
+        ${this._cardState.entities.map(entityMatch => this._renderEntityItem(entityMatch))}
+      </div>
     `;
+    }
+    /**
+     * Renders a single entity item
+     */
+    _renderEntityItem(entityMatch) {
+        const { entity_id, entity, display_name } = entityMatch;
+        return x `
+      <div class="entity-item" @click=${() => this._handleEntityClick(entity_id)}>
+        <div class="entity-icon">
+          <ha-icon icon="${this._getEntityIcon(entity)}"></ha-icon>
+        </div>
+        <div class="entity-info">
+          <div class="entity-name">${display_name || entity_id}</div>
+          <div class="entity-state">${entity.state}</div>
+        </div>
+      </div>
+    `;
+    }
+    /**
+     * Gets the icon for an entity
+     */
+    _getEntityIcon(entity) {
+        var _a;
+        return ((_a = entity.attributes) === null || _a === void 0 ? void 0 : _a.icon) || 'mdi:help-circle';
+    }
+    /**
+     * Handles entity click
+     */
+    _handleEntityClick(entityId) {
+        const event = new CustomEvent('hass-more-info', {
+            detail: { entityId },
+            bubbles: true,
+            composed: true
+        });
+        this.dispatchEvent(event);
     }
     /**
      * Handles entity more-info events from the renderer
@@ -1683,10 +1716,71 @@ HaRegexQueryCard.styles = i$3 `
       line-height: 1.4;
     }
 
+    /* Entity display */
+    .entity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .entity-grid {
+      display: grid;
+      grid-template-columns: repeat(var(--columns, 3), 1fr);
+      gap: 12px;
+    }
+
+    .entity-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      background: var(--card-background-color, #fff);
+      border: 1px solid var(--divider-color, #e0e0e0);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .entity-item:hover {
+      background: var(--secondary-background-color, #f5f5f5);
+      border-color: var(--primary-color, #03a9f4);
+    }
+
+    .entity-icon {
+      margin-right: 12px;
+      color: var(--primary-color, #03a9f4);
+    }
+
+    .entity-icon ha-icon {
+      --mdc-icon-size: 24px;
+    }
+
+    .entity-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .entity-name {
+      font-weight: 500;
+      color: var(--primary-text-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .entity-state {
+      font-size: 0.9em;
+      color: var(--secondary-text-color);
+      margin-top: 2px;
+    }
+
     /* Responsive design */
     @media (max-width: 600px) {
       .card-content {
         padding: 12px;
+      }
+      
+      .entity-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
   `;
@@ -1720,7 +1814,7 @@ window.customCards.push({
         max_entities: 10
     })
 });
-console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.18  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
+console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.19  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
 
 export { HaRegexQueryCard };
 //# sourceMappingURL=ha-regex-query-card.js.map
