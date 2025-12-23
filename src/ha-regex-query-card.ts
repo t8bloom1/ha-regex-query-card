@@ -675,9 +675,59 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
             <div class="entity-secondary">${this._getSecondaryInfo(entity, secondaryInfo)}</div>
           ` : ''}
         </div>
-        <div class="entity-state">${entity.state}</div>
+        <div class="entity-state">${this._formatEntityState(entity)}</div>
       </div>
     `;
+  }
+
+  /**
+   * Formats entity state with proper units and data types
+   */
+  private _formatEntityState(entity: any): string {
+    const state = entity.state;
+    const attributes = entity.attributes || {};
+    const unitOfMeasurement = attributes.unit_of_measurement;
+    const deviceClass = attributes.device_class;
+
+    // Handle unavailable/unknown states
+    if (['unavailable', 'unknown', 'none'].includes(state.toLowerCase())) {
+      return state;
+    }
+
+    // Handle numeric states with units
+    const numericState = parseFloat(state);
+    if (!isNaN(numericState) && unitOfMeasurement) {
+      // Format based on device class or unit
+      if (unitOfMeasurement === '%' || deviceClass === 'battery') {
+        return `${Math.round(numericState)}%`;
+      } else if (unitOfMeasurement === '°C' || unitOfMeasurement === '°F') {
+        return `${numericState}${unitOfMeasurement}`;
+      } else if (unitOfMeasurement === 'W' || unitOfMeasurement === 'kW') {
+        return `${numericState} ${unitOfMeasurement}`;
+      } else if (unitOfMeasurement === 'V') {
+        return `${numericState}V`;
+      } else if (unitOfMeasurement === 'A') {
+        return `${numericState}A`;
+      } else {
+        return `${numericState} ${unitOfMeasurement}`;
+      }
+    }
+
+    // Handle numeric states without units (add common formatting)
+    if (!isNaN(numericState)) {
+      // Check device class for context
+      if (deviceClass === 'battery') {
+        return `${Math.round(numericState)}%`;
+      } else if (deviceClass === 'temperature') {
+        return `${numericState}°`;
+      } else if (deviceClass === 'humidity') {
+        return `${Math.round(numericState)}%`;
+      }
+      return numericState.toString();
+    }
+
+    // Return state as-is for non-numeric values
+    return state;
   }
 
   /**
@@ -952,7 +1002,7 @@ declare global {
 });
 
 console.info(
-  `%c  REGEX-QUERY-CARD  %c  v1.0.22  `,
+  `%c  REGEX-QUERY-CARD  %c  v1.0.23  `,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
