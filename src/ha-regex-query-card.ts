@@ -73,8 +73,8 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
     return {
       type: 'custom:ha-regex-query-card',
       title: 'Query Card',
-      value_filter: '',
       pattern: '.*',
+      value_filter: '',
       secondary_info: 'none',
       display_type: 'list',
       sort_by: 'name',
@@ -1205,8 +1205,8 @@ declare global {
   getStubConfig: () => ({
     type: 'custom:ha-regex-query-card',
     title: 'Query Card',
-    value_filter: '',
     pattern: '.*',
+    value_filter: '',
     secondary_info: 'none',
     display_type: 'list',
     sort_by: 'name',
@@ -1216,7 +1216,7 @@ declare global {
 });
 
 console.info(
-  `%c  REGEX-QUERY-CARD  %c  v1.0.26  `,
+  `%c  REGEX-QUERY-CARD  %c  v1.0.27  `,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );

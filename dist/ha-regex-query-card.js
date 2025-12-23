@@ -1140,8 +1140,8 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
         return {
             type: 'custom:ha-regex-query-card',
             title: 'Query Card',
-            value_filter: '',
             pattern: '.*',
+            value_filter: '',
             secondary_info: 'none',
             display_type: 'list',
             sort_by: 'name',
@@ -2138,8 +2138,8 @@ window.customCards.push({
     getStubConfig: () => ({
         type: 'custom:ha-regex-query-card',
         title: 'Query Card',
-        value_filter: '',
         pattern: '.*',
+        value_filter: '',
         secondary_info: 'none',
         display_type: 'list',
         sort_by: 'name',
@@ -2147,7 +2147,7 @@ window.customCards.push({
         max_entities: 10
     })
 });
-console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.26  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
+console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.27  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
 
 export { HaRegexQueryCard };
 //# sourceMappingURL=ha-regex-query-card.js.map
