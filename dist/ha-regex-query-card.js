@@ -134,6 +134,7 @@ class PatternValidator {
         // Attempt to compile the regex pattern
         try {
             const compiledPattern = new RegExp(pattern, 'i');
+            console.log(`RegexQueryCard: Compiled pattern "${pattern}" with flags "i"`);
             // Test the pattern with a simple string to catch some runtime issues
             try {
                 compiledPattern.test('test.entity_id');
@@ -401,8 +402,13 @@ class EntityMatcher {
             // Get all entities from Home Assistant
             const allEntities = this.getAllEntities();
             const totalCount = allEntities.length;
+            console.log(`RegexQueryCard: Matching pattern "${options.pattern}" against ${totalCount} entities`);
             // Filter entities based on patterns
             const matchedEntities = this.filterEntities(allEntities, patternValidation.compiledPattern, excludeRegex, options.includeUnavailable || false);
+            console.log(`RegexQueryCard: Found ${matchedEntities.length} matches for pattern "${options.pattern}"`);
+            if (matchedEntities.length > 0) {
+                console.log('RegexQueryCard: Sample matches:', matchedEntities.slice(0, 3).map(e => e.entity_id));
+            }
             // Limit results if specified
             const limitedEntities = options.maxResults
                 ? matchedEntities.slice(0, options.maxResults)
@@ -439,6 +445,7 @@ class EntityMatcher {
      */
     getAllEntities() {
         if (!this.hass || !this.hass.states) {
+            console.warn('RegexQueryCard: No hass or hass.states available');
             return [];
         }
         const entities = [];
@@ -448,6 +455,10 @@ class EntityMatcher {
                 continue;
             }
             entities.push({ entityId, entity });
+        }
+        console.log(`RegexQueryCard: Found ${entities.length} total entities`);
+        if (entities.length > 0) {
+            console.log('RegexQueryCard: Sample entity IDs:', entities.slice(0, 5).map(e => e.entityId));
         }
         return entities;
     }

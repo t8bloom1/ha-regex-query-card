@@ -104,6 +104,8 @@ export class EntityMatcher {
       const allEntities = this.getAllEntities();
       const totalCount = allEntities.length;
 
+      console.log(`RegexQueryCard: Matching pattern "${options.pattern}" against ${totalCount} entities`);
+
       // Filter entities based on patterns
       const matchedEntities = this.filterEntities(
         allEntities,
@@ -111,6 +113,11 @@ export class EntityMatcher {
         excludeRegex,
         options.includeUnavailable || false
       );
+
+      console.log(`RegexQueryCard: Found ${matchedEntities.length} matches for pattern "${options.pattern}"`);
+      if (matchedEntities.length > 0) {
+        console.log('RegexQueryCard: Sample matches:', matchedEntities.slice(0, 3).map(e => e.entity_id));
+      }
 
       // Limit results if specified
       const limitedEntities = options.maxResults 
@@ -151,6 +158,7 @@ export class EntityMatcher {
    */
   private getAllEntities(): Array<{ entityId: string; entity: HassEntity }> {
     if (!this.hass || !this.hass.states) {
+      console.warn('RegexQueryCard: No hass or hass.states available');
       return [];
     }
 
@@ -163,6 +171,11 @@ export class EntityMatcher {
       }
 
       entities.push({ entityId, entity });
+    }
+
+    console.log(`RegexQueryCard: Found ${entities.length} total entities`);
+    if (entities.length > 0) {
+      console.log('RegexQueryCard: Sample entity IDs:', entities.slice(0, 5).map(e => e.entityId));
     }
 
     return entities;
