@@ -43,7 +43,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
   private _updateTimer?: number;
 
   // Connection state tracking
-  private _connected: boolean = false;
+
 
   // Last known entity count for change detection
   private _lastEntityCount: number = 0;
@@ -188,7 +188,6 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
   connectedCallback(): void {
     super.connectedCallback();
     console.log('RegexQueryCard: connectedCallback - element connected to DOM');
-    this._connected = true;
     
     // Initialize entity matcher if we have hass
     if (this.hass) {
@@ -205,7 +204,6 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
    */
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._connected = false;
     
     // Clear any pending timers
     if (this._updateTimer) {
@@ -320,11 +318,11 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
   private async _updateEntities(): Promise<void> {
     console.log('RegexQueryCard: _updateEntities called');
     
-    if (!this.config || !this._entityMatcher || !this._connected) {
+    if (!this.config || !this._entityMatcher || !this.isConnected) {
       console.log('RegexQueryCard: Skipping update - missing config, matcher, or not connected', {
         hasConfig: !!this.config,
         hasMatcher: !!this._entityMatcher,
-        connected: this._connected
+        connected: this.isConnected
       });
       return;
     }

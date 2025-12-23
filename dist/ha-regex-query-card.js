@@ -1063,7 +1063,6 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
             pattern_valid: true
         };
         // Connection state tracking
-        this._connected = false;
         // Last known entity count for change detection
         this._lastEntityCount = 0;
         // Entity state tracking for change detection
@@ -1178,7 +1177,6 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
     connectedCallback() {
         super.connectedCallback();
         console.log('RegexQueryCard: connectedCallback - element connected to DOM');
-        this._connected = true;
         // Initialize entity matcher if we have hass
         if (this.hass) {
             console.log('RegexQueryCard: Hass available in connectedCallback, initializing');
@@ -1194,7 +1192,6 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
      */
     disconnectedCallback() {
         super.disconnectedCallback();
-        this._connected = false;
         // Clear any pending timers
         if (this._updateTimer) {
             clearTimeout(this._updateTimer);
@@ -1285,11 +1282,11 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
      */
     async _updateEntities() {
         console.log('RegexQueryCard: _updateEntities called');
-        if (!this.config || !this._entityMatcher || !this._connected) {
+        if (!this.config || !this._entityMatcher || !this.isConnected) {
             console.log('RegexQueryCard: Skipping update - missing config, matcher, or not connected', {
                 hasConfig: !!this.config,
                 hasMatcher: !!this._entityMatcher,
-                connected: this._connected
+                connected: this.isConnected
             });
             return;
         }
