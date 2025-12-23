@@ -48,6 +48,14 @@ export class HaRegexEntityRenderer extends LitElement {
    */
   protected updated(changedProps: Map<string, unknown>): void {
     super.updated(changedProps);
+    console.log('HaRegexEntityRenderer: updated called with:', {
+      entityCount: this.entities.length,
+      entities: this.entities.slice(0, 3).map(e => e.entity_id),
+      hasHass: !!this.hass,
+      hasConfig: !!this.config,
+      loading: this.loading,
+      error: this.error
+    });
 
     // Initialize or update action handler when hass changes
     if (changedProps.has('hass') && this.hass) {

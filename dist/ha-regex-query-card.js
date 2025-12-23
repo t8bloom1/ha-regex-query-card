@@ -1544,6 +1544,12 @@ let HaRegexQueryCard = class HaRegexQueryCard extends i {
      * Renders entities using the entity renderer component
      */
     _renderEntities() {
+        console.log('RegexQueryCard: _renderEntities called with:', {
+            entityCount: this._cardState.entities.length,
+            entities: this._cardState.entities.slice(0, 3).map(e => e.entity_id),
+            hasHass: !!this.hass,
+            hasConfig: !!this.config
+        });
         return x `
       <ha-regex-entity-renderer
         .hass=${this.hass}

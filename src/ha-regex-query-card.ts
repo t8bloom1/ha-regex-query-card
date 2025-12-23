@@ -637,6 +637,13 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
    * Renders entities using the entity renderer component
    */
   private _renderEntities() {
+    console.log('RegexQueryCard: _renderEntities called with:', {
+      entityCount: this._cardState.entities.length,
+      entities: this._cardState.entities.slice(0, 3).map(e => e.entity_id),
+      hasHass: !!this.hass,
+      hasConfig: !!this.config
+    });
+    
     return html`
       <ha-regex-entity-renderer
         .hass=${this.hass}
