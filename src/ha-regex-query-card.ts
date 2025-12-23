@@ -579,8 +579,16 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
    * Renders the main card content based on current state
    */
   private _renderCardContent() {
+    console.log('RegexQueryCard: _renderCardContent called with state:', {
+      loading: this._cardState.loading,
+      error: this._cardState.error,
+      entityCount: this._cardState.entities.length,
+      entities: this._cardState.entities.slice(0, 3).map(e => e.entity_id)
+    });
+
     // Show loading state
     if (this._cardState.loading) {
+      console.log('RegexQueryCard: Rendering loading state');
       return html`
         <div class="loading">
           <ha-circular-progress active></ha-circular-progress>
@@ -591,6 +599,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
 
     // Show error state
     if (this._cardState.error) {
+      console.log('RegexQueryCard: Rendering error state:', this._cardState.error);
       return html`
         <div class="error">
           <ha-icon icon="mdi:alert-circle"></ha-icon>
@@ -601,6 +610,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
 
     // Show empty state
     if (this._cardState.entities.length === 0) {
+      console.log('RegexQueryCard: Rendering empty state - no entities');
       return html`
         <div class="empty">
           <ha-icon icon="mdi:magnify"></ha-icon>
@@ -612,6 +622,7 @@ export class HaRegexQueryCard extends LitElement implements LovelaceCard {
     }
 
     // Show entities based on display mode
+    console.log('RegexQueryCard: Rendering entities');
     return this._renderEntities();
   }
 
