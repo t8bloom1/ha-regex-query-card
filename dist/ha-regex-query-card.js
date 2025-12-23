@@ -1634,6 +1634,16 @@ __decorate([
 HaRegexQueryCard = __decorate([
     t('ha-regex-query-card')
 ], HaRegexQueryCard);
+// Register with Home Assistant's card registry
+window.customCards = window.customCards || [];
+window.customCards.push({
+    type: 'ha-regex-query-card',
+    name: 'Regex Query Card',
+    description: 'Display entities matching regex patterns',
+    preview: false,
+    documentationURL: 'https://github.com/t8bloom1/ha-regex-query-card'
+});
+console.info(`%c  REGEX-QUERY-CARD  %c  v1.0.1  `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
 
 export { HaRegexQueryCard };
 //# sourceMappingURL=ha-regex-query-card.js.map
